@@ -1,16 +1,20 @@
 package Model;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Created by Cip on 13-Mar-16.
  */
 public class LabyrinthPath {
-    private List<Cell> path = new LinkedList<>();
+    private Set<Cell> path = new LinkedHashSet<>();
 
-    public List<Cell> getPath() {
+    public Set<Cell> getPath() {
         return path;
+    }
+
+    public boolean containsCell(Cell cell) {
+        return path.contains(cell);
     }
 
     public void addCellToPath(Cell newCell) {

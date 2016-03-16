@@ -9,6 +9,7 @@ import View.LabyrinthView;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Created by Cip on 13-Mar-16.
@@ -16,7 +17,7 @@ import java.util.List;
 public abstract class AbstractLabyrinthSolver implements LabyrinthSolver {
     protected Labyrinth labyrinth;
     protected LabyrinthView view;
-    protected Cell currentPosition = labyrinth.getStartCell();
+    protected Cell currentPosition;
     protected List<LabyrinthObserver> observers = new LinkedList<>();
 
     public void setLabyrinth(Labyrinth labyrinth) {
@@ -34,16 +35,11 @@ public abstract class AbstractLabyrinthSolver implements LabyrinthSolver {
     protected void notifyAllObservers(Cell newCell) {
         for (LabyrinthObserver observer : observers) {
             observer.update(newCell);
-        }
-    }
-
-    public void updateView(LabyrinthPath path) {
-        if(view != null) {
-            if(!currentPosition.equals(labyrinth.getFinishCell())) {
-                view.printLabyrinth(labyrinth, currentPosition);
+            if(labyrinth.getFinishCell().equals(currentPosition)) {
+                observer.processSolution();
             }
             else {
-                view.printSolution(labyrinth, path);
+                observer.processCell();
             }
         }
     }

@@ -11,7 +11,7 @@ import java.util.*;
  * Created by Cip on 10-Mar-16.
  */
 public class LabyrinthFactory {
-    private final String FILE = "labyrinth.txt";
+    private final static String FILE = "labyrinth.txt";
 
 
     private static Labyrinth createRandomMatrixLabyrinth(int rowSize, int columnSize) {
