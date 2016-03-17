@@ -1,13 +1,13 @@
 package Controller;
 
 import Model.Cell;
+import Model.Direction;
 import Model.Labyrinth;
 import View.LabyrinthView;
 import com.google.common.base.Preconditions;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.LinkedList;
 
 /**
@@ -25,40 +25,54 @@ public class InteractiveSolver extends AbstractLabyrinthSolver {
     }
 
     @Override
-    public Cell nextCellToExplore() throws IOException, IllegalArgumentException {
-        try (BufferedReader br = new BufferedReader(new CustomInputStreamReader(System.in))) {
-            String line = br.readLine().trim();
-            switch (line) {
-                case "U":
-                    return exploreCellUp();
-                case "D":
-                    return exploreCellDown();
-                case "L":
-                    return exploreCellLeft();
-                case "R":
-                    return exploreCellRight();
-                default:
-                    throw new IllegalArgumentException();
-            }
+    public Cell nextCellToExplore() {
+        Direction direction = view.getNextDirection();
+        switch (direction) {
+            case UP:
+                return exploreCellUp();
+            case DOWN:
+                return exploreCellDown();
+            case LEFT:
+                return exploreCellLeft();
+            case RIGHT:
+                return exploreCellRight();
+            default:
+                throw new IllegalArgumentException();
         }
     }
 
     @Override
     public void solve() {
-        try {
-            while (!currentPosition.equals(labyrinth.getFinishCell())) {
-                System.out.println("Introduceti o noua mutare: \n");
-                Cell newCell = null;
-                newCell = nextCellToExplore();
-                if (!currentPosition.equals(newCell)) {
-                    currentPosition = newCell;
-                    notifyAllObservers(newCell);
-                }
+        System.out.println("The initial look:");
+        view.printLabyrinth(labyrinth, currentPosition);
+        Cell newCell;
+        newCell = labyrinth.getStartCell();
+        while (!newCell.equals(labyrinth.getFinishCell())) {
+            newCell = nextCellToExplore();
+            if (!currentPosition.equals(newCell)) {
+                currentPosition = newCell;
+                notifyAllObservers(newCell);
+            }
+        }
+        System.out.println("Do you want to continue another game? [Y/N]");
+        boolean wantToContinue = false;
+        try (BufferedReader br = new BufferedReader(new CustomInputStreamReader(System.in))) {
+            String response = br.readLine();
+            switch (response) {
+                case "Y":
+                    wantToContinue = true;
+                    break;
+                case "N":
+                    break;
+                default :
+                    System.out.println("You introduced a wrong value.");
             }
         } catch (IOException e) {
-            System.out.println("Inputul introdus nu a putut fi procesat.");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Inputul introdus nu este valid. Introduceti una dintre valorile U, D, L, R:\n");
+            System.out.println("Error at reading from user input.");
+        }
+        if(wantToContinue) {
+            currentPosition = labyrinth.getStartCell();
+            solve();
         }
     }
 }
